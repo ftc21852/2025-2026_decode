@@ -42,8 +42,7 @@ public class KaylenChassis extends LinearOpMode {
             flywheel = hardwareMap.get(DcMotor.class, FLYWHEEL_NAME);
             flywheel.setDirection(DcMotor.Direction.FORWARD);
             flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        } catch(ArithmeticException e) {
-            telemetry.addLine("flywheel not ready");
+        } catch(IllegalArgumentException e) {
             flywheel = null;
         }
 
@@ -81,7 +80,9 @@ public class KaylenChassis extends LinearOpMode {
             telemetry.addData("LR", "%.2f");
             telemetry.addData("RF", "%.2f");
             telemetry.addData("RR", "%.2f");
-            telemetry.addData("Flywheel", "%.2f", flywheel.getPower());
+            if(flywheel != null) {
+                telemetry.addData("Flywheel", "%.2f", flywheel.getPower());
+            }
             telemetry.update();
         }
     }
