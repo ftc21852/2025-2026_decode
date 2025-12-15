@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@TeleOp(name = "kaylenChassis")
+@TeleOp(name = "KaylenChassis")
 public class KaylenChassis extends LinearOpMode {
 
     // Chassis motors
