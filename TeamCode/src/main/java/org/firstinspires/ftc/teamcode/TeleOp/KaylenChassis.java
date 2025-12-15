@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@TeleOp(name = "KaylenChassis")
+@TeleOp(name = "kaylenChassis")
 public class KaylenChassis extends LinearOpMode {
 
     // Chassis motors
@@ -20,18 +20,14 @@ public class KaylenChassis extends LinearOpMode {
     private static final String RF_NAME = "fr";
     private static final String RR_NAME = "br";
     private static final String FLYWHEEL_NAME = "flywheel";
-    private static final String SERVO_NAME = "servo";
 
 
     // find motor class
     private DcMotorEx leftFront, leftRear, rightFront, rightRear;
     private DcMotor flywheel;
-    private Servo servo;
 
 
 
-    // Gate motor
-    private boolean gateTriggerWasPressed = false;
 
 
     @Override
@@ -41,8 +37,15 @@ public class KaylenChassis extends LinearOpMode {
         leftRear  = hardwareMap.get(DcMotorEx.class, LR_NAME);
         rightFront = hardwareMap.get(DcMotorEx.class, RF_NAME);
         rightRear = hardwareMap.get(DcMotorEx.class, RR_NAME);
-        flywheel = hardwareMap.get(DcMotor.class, FLYWHEEL_NAME);
-        servo = hardwareMap.get(Servo.class, SERVO_NAME);
+
+        try{
+            flywheel = hardwareMap.get(DcMotor.class, FLYWHEEL_NAME);
+            flywheel.setDirection(DcMotor.Direction.FORWARD);
+            flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        } catch(ArithmeticException e) {
+            telemetry.addLine("flywheel not ready");
+            flywheel = null;
+        }
 
 
         // Motor directions
@@ -50,7 +53,6 @@ public class KaylenChassis extends LinearOpMode {
         leftRear.setDirection(DcMotorSimple.Direction.FORWARD);
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
-        flywheel.setDirection(DcMotor.Direction.FORWARD);
 
 
         // Zero power behavior
@@ -58,10 +60,9 @@ public class KaylenChassis extends LinearOpMode {
         leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
 
-        telemetry.addLine("Chassis + Flywheel + servo ready");
+        telemetry.addLine("Chassis ready");
         telemetry.update();
         waitForStart();
 
