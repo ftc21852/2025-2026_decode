@@ -3,13 +3,10 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
-@TeleOp(name = "kaylenChassis")
+@TeleOp(name = "w/wo_flywheel_chassis")
 public class KaylenChassis extends LinearOpMode {
 
     // Chassis motors
@@ -49,9 +46,9 @@ public class KaylenChassis extends LinearOpMode {
 
         // Motor directions
         rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
-        leftRear.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
 
 
         // Zero power behavior
@@ -67,14 +64,20 @@ public class KaylenChassis extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            double y  = gamepad1.left_stick_y ;
+            double y  = -gamepad1.left_stick_y ;
             double x  =  gamepad1.left_stick_x;
             double rx =  gamepad1.right_stick_x ;
             //chassis
             leftFront.setPower(y + x + rx);
             leftRear.setPower(y - x + rx);
-            rightFront.setPower(y + x + rx);
-            rightRear.setPower(y - x + rx);
+            rightFront.setPower(y - x - rx);
+            rightRear.setPower(y + x - rx);
+            if((flywheel != null)&&(gamepad2.a)){
+                flywheel.setPower(0.7);
+            }
+            if((flywheel != null)&&(gamepad2.b)){
+                flywheel.setPower(0);
+            }
 
             telemetry.addData("LF", "%.2f");
             telemetry.addData("LR", "%.2f");
