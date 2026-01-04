@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-@TeleOp(name = "w/wo_flywheel_chassis")
+@TeleOp(name = "w/wo_intake+flywheel_chassis")
 public class KaylenChassis extends LinearOpMode {
 
     // Chassis motors
@@ -18,10 +18,12 @@ public class KaylenChassis extends LinearOpMode {
     private static final String RR_NAME = "br";
     private static final String FLYWHEEL_NAME = "flywheel";
 
+    private static final String INTAKE_NAME = "intake";
+
 
     // find motor class
     private DcMotorEx leftFront, leftRear, rightFront, rightRear;
-    private DcMotor flywheel;
+    private DcMotor flywheel, intake;
 
 
 
@@ -41,6 +43,14 @@ public class KaylenChassis extends LinearOpMode {
             flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         } catch(IllegalArgumentException e) {
             flywheel = null;
+        }
+
+        try{
+            intake = hardwareMap.get(DcMotor.class, INTAKE_NAME);
+            intake.setDirection(DcMotor.Direction.FORWARD);
+            intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        } catch(IllegalArgumentException e) {
+            intake = null;
         }
 
 
@@ -72,12 +82,26 @@ public class KaylenChassis extends LinearOpMode {
             leftRear.setPower(y - x + rx);
             rightFront.setPower(y - x - rx);
             rightRear.setPower(y + x - rx);
+
+
             if((flywheel != null)&&(gamepad2.a)){
-                flywheel.setPower(0.7);
+                flywheel.setPower(0.1);
             }
             if((flywheel != null)&&(gamepad2.b)){
                 flywheel.setPower(0);
             }
+
+
+            if((intake != null)&&(gamepad2.dpad_up)){
+                intake.setPower(-0.6);
+            }
+            if((intake != null)&&(gamepad2.dpad_down)){
+                intake.setPower(0.6);
+            }
+            if((intake != null)&&((gamepad2.dpad_right)||(gamepad2.dpad_left))){
+                intake.setPower(0);
+            }
+
 
             telemetry.addData("LF", "%.2f");
             telemetry.addData("LR", "%.2f");
@@ -85,6 +109,9 @@ public class KaylenChassis extends LinearOpMode {
             telemetry.addData("RR", "%.2f");
             if(flywheel != null) {
                 telemetry.addData("Flywheel", "%.2f", flywheel.getPower());
+            }
+            if(intake != null) {
+                telemetry.addData("Intake", "%.2f", intake.getPower());
             }
             telemetry.update();
         }
