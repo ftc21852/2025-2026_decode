@@ -85,7 +85,7 @@ public class KaylenChassis extends LinearOpMode {
 
 
             if((flywheel != null)&&(gamepad2.a)){
-                flywheel.setPower(0.1);
+                flywheel.setPower(0.4);
             }
             if((flywheel != null)&&(gamepad2.b)){
                 flywheel.setPower(0);
