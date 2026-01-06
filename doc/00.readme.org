@@ -1,0 +1,13 @@
+* Coding practices
+- code features should be developed on branches other than ~master~
+- it is encouraged to commit meaningful chunks of code (even if not properly debugged) for better collaboration
+- when a feature is deemed complete (i.e. tested, debugged, etc) it can be added to a pull request into ~master~
+- upon successful code review, this feature is merged
+
+- all code that runs on a robot during a competition meet must meet the following criteria:
+  - it was merged into the ~master~ branch prior to deployment on the robot
+  - the robot will have been tested with this version of the code according to the pre-meet checklist
+  - any ad-hoc modifications must receive the approval of team leaders prior to being deployed. The
+    reasons for such a request and the solution adopted must be documented clearly. This constitutes
+    a process failure, and it must be added to the checklist for the following meets so that it does
+    not repeat.
