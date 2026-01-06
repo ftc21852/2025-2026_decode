@@ -35,7 +35,7 @@ import java.util.List;
  * @version 1.0, 6/26/2025
  */
 @Configurable
-@TeleOp(name = "Tuning", group = "Pedro Pathing")
+@TeleOp(name = "TuningTEST2", group = "Pedro Pathing")
 public class Tuning extends SelectableOpMode {
     public static Follower follower;
 
@@ -207,7 +207,7 @@ class ForwardTuner extends OpMode {
     public void loop() {
         follower.update();
 
-        telemetryM.debug("Distance Moved: " + follower.getPose().getX());
+        telemetryM.debug("Distance Moved: " + (follower.getPose().getX() - 72));
         telemetryM.debug("The multiplier will display what your forward ticks to inches should be to scale your current distance to " + DISTANCE + " inches.");
         telemetryM.debug("Multiplier: " + (DISTANCE / ((follower.getPose().getX() - 72) / follower.getPoseTracker().getLocalizer().getForwardMultiplier())));
         telemetryM.update(telemetry);
@@ -255,7 +255,7 @@ class LateralTuner extends OpMode {
     public void loop() {
         follower.update();
 
-        telemetryM.debug("Distance Moved: " + follower.getPose().getY());
+        telemetryM.debug("Distance Moved: " + (follower.getPose().getY() - 72));
         telemetryM.debug("The multiplier will display what your strafe ticks to inches should be to scale your current distance to " + DISTANCE + " inches.");
         telemetryM.debug("Multiplier: " + (DISTANCE / ((follower.getPose().getY() - 72) / follower.getPoseTracker().getLocalizer().getLateralMultiplier())));
         telemetryM.update(telemetry);
