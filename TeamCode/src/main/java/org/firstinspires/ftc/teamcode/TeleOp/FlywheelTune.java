@@ -25,6 +25,8 @@ public class FlywheelTune extends LinearOpMode {
     private DcMotor flywheel;
 
     public double getDistance() {
+        return 0;
+
         final int FIELD_WIDTH = 48500;
         final int FIELD_HEIGHT = 48500;
 
