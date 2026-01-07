@@ -74,26 +74,29 @@ public class FlywheelTune extends LinearOpMode {
         BinarySearch low = null;
         BinarySearch high = null;
 
+        boolean dpad_up = false, dpad_down = false, dpad_right = false;
+        boolean a = false, b = false, x = false,y = false;
+
         while (opModeIsActive()) {
             if (tuneMode.equals("first goal")) {
-                if (gamepad2.dpad_up) {
+                if (gamepad2.dpad_up && !dpad_up) {
                     telemetry.addLine("Launched too far at power " + start.getMid());
                     start.goLow();
                     flywheel.setPower(start.getMid());
                 }
-                if (gamepad2.dpad_down) {
+                if (gamepad2.dpad_down && !dpad_down) {
                     telemetry.addLine("Launched too close at power " + start.getMid());
                     start.goHigh();
                     flywheel.setPower(start.getMid());
                 }
-                if (gamepad2.dpad_right) {
+                if (gamepad2.dpad_right && !dpad_right) {
                     telemetry.addLine("Scored at power " + start.getMid());
                     tuneMode = "find lower bound";
                     low = new BinarySearch(start.getLow(), start.getMid());
                     flywheel.setPower(low.getMid());
                     telemetry.addLine("Finding lower bound");
                 }
-                if (gamepad2.x) {
+                if (gamepad2.x && !x) {
                     tuneMode = "";
                     start = null;
                     low = null;
@@ -101,35 +104,35 @@ public class FlywheelTune extends LinearOpMode {
                     flywheel.setPower(0);
                 }
             } else if (tuneMode.equals("find lower bound")) {
-                if (gamepad2.dpad_down) {
+                if (gamepad2.dpad_down && !dpad_down) {
                     telemetry.addLine("Launched too close at power " + low.getMid());
                     low.goHigh();
                     flywheel.setPower(low.getMid());
                 }
-                if (gamepad2.dpad_right) {
+                if (gamepad2.dpad_right && !dpad_right) {
                     telemetry.addLine("Scored at power " + low.getMid());
                     low.goLow();
                     flywheel.setPower(low.getMid());
                 }
-                if (gamepad2.a) {
+                if (gamepad2.a && !a) {
                     low = new BinarySearch(start.getLow(), start.getMid());
                     flywheel.setPower(low.getMid());
                     telemetry.addLine("Finding lower bound");
                 }
-                if (gamepad2.y) {
+                if (gamepad2.y && !y) {
                     tuneMode = "find upper bound";
                     high = new BinarySearch(start.getMid(), start.getHigh());
                     flywheel.setPower(high.getMid());
                     telemetry.addLine("Finding upper bound");
                 }
-                if (gamepad2.b) {
+                if (gamepad2.b && !b) {
                     if (high == null) {
                         telemetry.addLine("Cannot produce results: test upper bound first");
                     } else {
                         telemetry.addLine("The best power at distance " + getDistance() + " is " + (low.getHigh() + high.getLow()) / 2);
                     }
                 }
-                if (gamepad2.x) {
+                if (gamepad2.x && !x) {
                     if (high != null) {
                         telemetry.addLine("The best power at distance " + getDistance() + " is " + (low.getHigh() + high.getLow()) / 2);
                     }
@@ -141,31 +144,31 @@ public class FlywheelTune extends LinearOpMode {
                     telemetry.addLine("Ending test");
                 }
             } else if (tuneMode.equals("find upper bound")) {
-                if (gamepad2.dpad_up) {
+                if (gamepad2.dpad_up && !dpad_up) {
                     telemetry.addLine("Launched too far at power " + high.getMid());
                     high.goLow();
                     flywheel.setPower(high.getMid());
                 }
-                if (gamepad2.dpad_right) {
+                if (gamepad2.dpad_right && !dpad_right) {
                     telemetry.addLine("Scored at power " + high.getMid());
                     high.goHigh();
                     flywheel.setPower(high.getMid());
                 }
-                if (gamepad2.a) {
+                if (gamepad2.a && !a) {
                     tuneMode = "find lower bound";
                     low = new BinarySearch(start.getLow(), start.getMid());
                     flywheel.setPower(low.getMid());
                     telemetry.addLine("Finding lower bound");
                 }
-                if (gamepad2.y) {
+                if (gamepad2.y && !y) {
                     high = new BinarySearch(start.getMid(), start.getHigh());
                     flywheel.setPower(high.getMid());
                     telemetry.addLine("Finding upper bound");
                 }
-                if (gamepad2.b) {
+                if (gamepad2.b && !b) {
                     telemetry.addLine("The best power at distance " + getDistance() + " is " + (low.getHigh() + high.getLow()) / 2);
                 }
-                if (gamepad2.x) {
+                if (gamepad2.x && !x) {
                     telemetry.addLine("The best power at distance " + getDistance() + " is " + (low.getHigh() + high.getLow()) / 2);
                     tuneMode = "";
                     start = null;
@@ -196,6 +199,15 @@ public class FlywheelTune extends LinearOpMode {
                     flywheel.setPower(start.getMid());
                 }
             }
+
+            dpad_up = gamepad2.dpad_up;
+            dpad_down = gamepad2.dpad_down;
+            dpad_right = gamepad2.dpad_right;
+            a = gamepad2.a;
+            b = gamepad2.b;
+            x = gamepad2.x;
+            y = gamepad2.y;
+
             telemetry.addData("Flywheel", "%.2f", flywheel.getPower());
             telemetry.update();
         }
