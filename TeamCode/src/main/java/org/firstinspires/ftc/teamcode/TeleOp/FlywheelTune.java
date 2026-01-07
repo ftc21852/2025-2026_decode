@@ -26,7 +26,7 @@ public class FlywheelTune extends LinearOpMode {
 
     public double getDistance() {
         return 0;
-
+        /*
         final int FIELD_WIDTH = 48500;
         final int FIELD_HEIGHT = 48500;
 
@@ -38,6 +38,7 @@ public class FlywheelTune extends LinearOpMode {
         double offsetX = FIELD_WIDTH - leftTicks; // since we're testing using the red goal
         double offsetY = FIELD_HEIGHT - rightTicks;
         return Math.hypot(offsetX, offsetY);
+        */
     }
 
     @Override
