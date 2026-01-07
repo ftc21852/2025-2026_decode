@@ -53,7 +53,6 @@ public class FlywheelTest extends LinearOpMode {
     // find motor class
     private DcMotorEx leftFront, leftRear, rightFront, rightRear;
     private DcMotor flywheel;
-    private Servo servo;
 
     public double getDistance() {
         final int FIELD_WIDTH = 48500;
@@ -77,7 +76,6 @@ public class FlywheelTest extends LinearOpMode {
         rightFront = hardwareMap.get(DcMotorEx.class, RF_NAME);
         rightRear = hardwareMap.get(DcMotorEx.class, RR_NAME);
         flywheel = hardwareMap.get(DcMotor.class, FLYWHEEL_NAME);
-        servo = hardwareMap.get(Servo.class, SERVO_NAME);
 
         // Motor directions
         rightFront.setDirection(DcMotorSimple.Direction.FORWARD);

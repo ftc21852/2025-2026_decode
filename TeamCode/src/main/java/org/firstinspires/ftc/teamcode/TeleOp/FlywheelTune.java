@@ -23,7 +23,6 @@ public class FlywheelTune extends LinearOpMode {
     // find motor class
     private DcMotorEx leftFront, leftRear, rightFront, rightRear;
     private DcMotor flywheel;
-    private Servo servo;
 
     public double getDistance() {
         final int FIELD_WIDTH = 48500;
@@ -47,7 +46,6 @@ public class FlywheelTune extends LinearOpMode {
         rightFront = hardwareMap.get(DcMotorEx.class, RF_NAME);
         rightRear = hardwareMap.get(DcMotorEx.class, RR_NAME);
         flywheel = hardwareMap.get(DcMotor.class, FLYWHEEL_NAME);
-        servo = hardwareMap.get(Servo.class, SERVO_NAME);
 
         // Motor directions
         rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -74,7 +72,7 @@ public class FlywheelTune extends LinearOpMode {
         BinarySearch high = null;
 
         while (opModeIsActive()) {
-            if (tuneMode == "first goal") {
+            if (tuneMode.equals("first goal")) {
                 if (gamepad2.dpad_up) {
                     telemetry.addLine("Launched too far at power " + start.getMid());
                     start.goLow();
@@ -99,7 +97,7 @@ public class FlywheelTune extends LinearOpMode {
                     high = null;
                     flywheel.setPower(0);
                 }
-            } else if (tuneMode == "find lower bound") {
+            } else if (tuneMode.equals("find lower bound")) {
                 if (gamepad2.dpad_down) {
                     telemetry.addLine("Launched too close at power " + low.getMid());
                     low.goHigh();
@@ -139,7 +137,7 @@ public class FlywheelTune extends LinearOpMode {
                     flywheel.setPower(0);
                     telemetry.addLine("Ending test");
                 }
-            } else if (tuneMode == "find upper bound") {
+            } else if (tuneMode.equals("find upper bound")) {
                 if (gamepad2.dpad_up) {
                     telemetry.addLine("Launched too far at power " + high.getMid());
                     high.goLow();
