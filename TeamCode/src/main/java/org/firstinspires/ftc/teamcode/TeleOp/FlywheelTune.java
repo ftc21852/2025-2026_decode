@@ -193,6 +193,7 @@ public class FlywheelTune extends LinearOpMode {
                     telemetry.addLine("Starting tuning at distance " + getDistance());
                     tuneMode = "first goal";
                     start = new BinarySearch(0, 1);
+                    flywheel.setPower(start.getMid());
                 }
             }
             telemetry.addData("Flywheel", "%.2f", flywheel.getPower());

@@ -8,7 +8,7 @@ public class BinarySearch {
     public BinarySearch(double low, double high) {
         this.low = low;
         this.high = high;
-        this.mid = low + high / 2;
+        this.mid = (low + high) / 2;
     }
 
     public void goLow() {
