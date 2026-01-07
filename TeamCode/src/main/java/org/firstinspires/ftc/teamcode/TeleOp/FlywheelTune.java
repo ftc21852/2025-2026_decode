@@ -41,6 +41,27 @@ public class FlywheelTune extends LinearOpMode {
         */
     }
 
+    public void setChassisPower() {
+        double y = gamepad1.left_stick_y;
+        double x = gamepad1.left_stick_x;
+        double rx = gamepad1.right_stick_x;
+
+        double FL = y + x + rx;
+        double BL = y - x + rx;
+        double FR = y + x + rx;
+        double BR = y - x + rx;
+
+        leftFront.setPower(FL);
+        leftRear.setPower(BL);
+        rightFront.setPower(FR);
+        rightRear.setPower(BR);
+
+        telemetry.addData("LF", "%.2f", FL);
+        telemetry.addData("LR", "%.2f", BL);
+        telemetry.addData("RF", "%.2f", FR);
+        telemetry.addData("RR", "%.2f", BR);
+    }
+
     @Override
     public void runOpMode() {
         // Initialize chassis motors
@@ -178,19 +199,7 @@ public class FlywheelTune extends LinearOpMode {
                     telemetry.addLine("Ending test");
                 }
             } else {
-                double y = gamepad1.left_stick_y;
-                double x = gamepad1.left_stick_x;
-                double rx = gamepad1.right_stick_x;
-
-                leftFront.setPower(y + x + rx);
-                leftRear.setPower(y - x + rx);
-                rightFront.setPower(y + x + rx);
-                rightRear.setPower(y - x + rx);
-
-                telemetry.addData("LF", "%.2f");
-                telemetry.addData("LR", "%.2f");
-                telemetry.addData("RF", "%.2f");
-                telemetry.addData("RR", "%.2f");
+                setChassisPower();
 
                 if (gamepad2.x) {
                     telemetry.addLine("Starting tuning at distance " + getDistance());
