@@ -1,13 +1,12 @@
-package org.firstinspires.ftc.teamcode.TeleOp;
+package org.firstinspires.ftc.teamcode.TeleOp.Testing;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-import org.firstinspires.ftc.teamcode.TeleOp.Flywheel.Matrix;
+import org.firstinspires.ftc.teamcode.TeleOp.FlywheelUtil.Matrix;
 
 import java.util.function.Function;
 
@@ -48,7 +47,6 @@ public class FlywheelTest extends LinearOpMode {
     private static final String RF_NAME = "fr";
     private static final String RR_NAME = "br";
     private static final String FLYWHEEL_NAME = "flywheel";
-    private static final String SERVO_NAME = "servo";
 
     // find motor class
     private DcMotorEx leftFront, leftRear, rightFront, rightRear;

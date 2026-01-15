@@ -1,8 +1,8 @@
-package org.firstinspires.ftc.teamcode.TeleOp.Flywheel;
+package org.firstinspires.ftc.teamcode.TeleOp.FlywheelUtil;
 
 public class Matrix {
-    private int rows;
-    private int cols;
+    private final int rows;
+    private final int cols;
     private double[][] entries;
 
     public Matrix(double[][] entries) {
