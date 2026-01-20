@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -20,10 +20,12 @@ public class Flywheel {
     private final double[] p = {}; // power
 
     private Gamepad gamepad;
-    private DcMotor flywheel;
+    private DcMotorEx flywheel;
     private Telemetry telemetry;
+    private boolean flywheelActivated = false;
+    private boolean statusA = false, statusB = false;
 
-    // private final Function<Double, Double> distanceToPower = getPowerFunction(x, p);
+    // private final Function<Double, Double> distanceToSpeed = getPowerFunction(x, p);
 
     Function<Double, Double> getPowerFunction(double[] x, double[] p) {
         double[][] a = new double[x.length][2];
@@ -51,8 +53,8 @@ public class Flywheel {
         final int FIELD_WIDTH = 48500;
         final int FIELD_HEIGHT = 48500;
 
-        DcMotor leftOdo = hardwareMap.get(DcMotor.class, "leftOdo"); // x
-        DcMotor rightOdo = hardwareMap.get(DcMotor.class, "rightOdo"); // y
+        DcMotorEx leftOdo = hardwareMap.get(DcMotorEx.class, "leftOdo"); // x
+        DcMotorEx rightOdo = hardwareMap.get(DcMotorEx.class, "rightOdo"); // y
         int leftTicks = leftOdo.getCurrentPosition();
         int rightTicks = rightOdo.getCurrentPosition();
 
@@ -62,29 +64,30 @@ public class Flywheel {
     }
     */
 
-    public Flywheel(Gamepad gamepad, DcMotor flywheel, Telemetry telemetry) {
+    public Flywheel(Gamepad gamepad, DcMotorEx flywheel, Telemetry telemetry) {
         this.gamepad = gamepad;
         this.flywheel = flywheel;
         this.telemetry = telemetry;
 
-        flywheel.setDirection(DcMotor.Direction.FORWARD);
+        flywheel.setDirection(DcMotorEx.Direction.FORWARD);
 
-        flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        flywheel.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
+
+        flywheel.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public void update() {
-
-        if (gamepad.a) {
+        if (gamepad.a && !statusA || gamepad.b && !statusB) {
+            flywheelActivated = !flywheelActivated;
+            flywheel.setVelocity(flywheelActivated ? 1430 : 0);
+    
             /*
-            double flywheelPower = distanceToPower.apply(getDistance());
+            double flywheelPower = distanceToSpeed.apply(getDistance());
             flywheel.setPower(flywheelPower);
             telemetry.addData("Flywheel", "%.2f", flywheelPower);
             */
-            flywheel.setPower(0.4);
-            telemetry.addData("Flywheel", "On");
-        } else if (gamepad.b) {
-            flywheel.setPower(0);
-            telemetry.addData("Flywheel", "Off");
         }
+        statusA = gamepad.a;
+        statusB = gamepad.b;
     }
 }
