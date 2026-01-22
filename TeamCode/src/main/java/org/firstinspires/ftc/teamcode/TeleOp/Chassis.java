@@ -1,62 +1,59 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-
 import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Chassis {
     private Gamepad gamepad;
-    private DcMotorEx FL, BL, FR, BR;
+    private DcMotorEx frontLeft, frontRight, backLeft, backRight;
     private Telemetry telemetry;
 
     public Chassis(Gamepad gamepad, DcMotorEx frontLeft, DcMotorEx backLeft, DcMotorEx frontRight, DcMotorEx backRight, Telemetry telemetry) {
         this.gamepad = gamepad;
 
-        FL = frontLeft;
-        BL = backLeft;
-        FR = frontRight;
-        BR = backRight;
+        this.frontLeft = frontLeft;
+        this.frontRight = frontRight;
+        this.backLeft = backLeft;
+        this.backRight = backRight;
 
-        FL.setDirection(DcMotorEx.Direction.REVERSE);
-        BL.setDirection(DcMotorEx.Direction.REVERSE);
-        FR.setDirection(DcMotorEx.Direction.FORWARD);
-        BR.setDirection(DcMotorEx.Direction.FORWARD);
+        frontLeft.setDirection(DcMotorEx.Direction.FORWARD);
+        frontRight.setDirection(DcMotorEx.Direction.REVERSE);
+        backLeft.setDirection(DcMotorEx.Direction.FORWARD);
+        backRight.setDirection(DcMotorEx.Direction.REVERSE);
 
-        FL.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        BL.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        FR.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        BR.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        frontLeft.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        backLeft.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
         this.telemetry = telemetry;
     }
 
     public void update() {
-        double y = -gamepad.left_stick_y;
         double x = gamepad.left_stick_x;
+        double y = gamepad.left_stick_y;
         double rx = gamepad.right_stick_x;
 
-        double powerFL = y + x + rx;
-        double powerBL = y - x + rx;
-        double powerFR = y - x - rx;
-        double powerBR = y + x - rx;
+        double frontLeftPower = y - x - rx;
+        double frontRightPower = y + x + rx;
+        double backLeftPower = y + x - rx;
+        double backRightPower = y - x + rx;
 
-        FL.setPower(powerFL);
-        BL.setPower(powerBL);
-        FR.setPower(powerFR);
-        BR.setPower(powerBR);
+        frontLeft.setPower(frontLeftPower * 0.6);
+        frontRight.setPower(frontRightPower * 0.6);
+        backLeft.setPower(backLeftPower * 0.6);
+        backRight.setPower(backRightPower * 0.6);
 
-        telemetry.addData("LF", "%.2f", powerFL);
-        telemetry.addData("LR", "%.2f", powerBL);
-        telemetry.addData("RF", "%.2f", powerFR);
-        telemetry.addData("RR", "%.2f", powerBR);
+        telemetry.addData("X-velocity", x);
+        telemetry.addData("Y-velocity", y);
+        telemetry.addData("Rotation", -rx);
     }
 
     public void stop() {
-        FL.setPower(0);
-        BL.setPower(0);
-        FR.setPower(0);
-        BR.setPower(0);
+        frontLeft.setPower(0);
+        frontRight.setPower(0);
+        backLeft.setPower(0);
+        backRight.setPower(0);
     }
 }

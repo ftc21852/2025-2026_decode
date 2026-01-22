@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-
 import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -18,9 +17,10 @@ public class Transfer {
     private DcMotorEx kicker;
     private Telemetry telemetry;
 
-    private String mode = "stop";
-    private boolean alternating = false;
-    private long nextAlternatingTime;
+    public long loopStartTime;
+    private boolean looping = false;
+    private int loopStage = 0;
+    private long nextLoopTime;
 
     public Transfer(Gamepad gamepad, DcMotorEx intake, DcMotorEx kicker, Telemetry telemetry) {
         this.gamepad = gamepad;
@@ -43,54 +43,58 @@ public class Transfer {
     private void in() {
         intake.setPower(0.6);
         kicker.setVelocity(-1000);
-        mode = "in";
     }
 
     private void out() {
         intake.setPower(0.4);
         kicker.setVelocity(1000);
-        mode = "out";
     }
 
     private void reverse() {
         intake.setPower(-0.6);
         kicker.setVelocity(-1000);
-        mode = "reverse";
     }
 
     private void stop() {
         intake.setPower(0);
         kicker.setVelocity(0);
-        mode = "stop";
     }
 
     public void update() {
-        if (gamepad.left_bumper) {
-            if (alternating) {
-                if (new Date().getTime() >= nextAlternatingTime) {
-                    if (mode == "out") {
-                        stop();
-                        nextAlternatingTime += 750;
-                    } else {
-                        out();
-                        nextAlternatingTime += 750;
+        if (gamepad.left_trigger > 0.1) {
+            if (looping) {
+                if (new Date().getTime() >= nextLoopTime) {
+                    switch (loopStage) {
+                        case 0:
+                        case 1:
+                            out();
+                            nextLoopTime += 500;
+                            loopStage = 2;
+                            break;
+                        case 2:
+                            in();
+                            nextLoopTime += 500;
+                            loopStage = 3;
+                            break;
+                        case 3:
+                            stop();
+                            nextLoopTime += 250;
+                            loopStage = 1;
+                            break;
                     }
                 }
             } else {
-                alternating = true;
-                nextAlternatingTime = new Date().getTime();
+                looping = true;
+                loopStartTime = nextLoopTime = new Date().getTime();
+                loopStage = 0;
             }
         } else {
-            alternating = false;
+            looping = false;
+            loopStartTime = -1;
             if (gamepad.right_trigger > 0.1) {
                 in();
-            } else if (gamepad.left_trigger > 0.1) {
-                out();
             } else if (gamepad.right_bumper) {
                 reverse();
-            } else if (gamepad.y) {
-                intake.setPower(0.6);
-                kicker.setVelocity(-450);
             } else {
                 stop();
             }

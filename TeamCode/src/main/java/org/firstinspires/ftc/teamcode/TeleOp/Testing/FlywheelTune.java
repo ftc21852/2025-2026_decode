@@ -29,6 +29,8 @@ public class FlywheelTune extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        String message = "";
+        
         // Initialize chassis motors
         DcMotorEx frontLeft = hardwareMap.get(DcMotorEx.class, "fl");
         DcMotorEx backLeft  = hardwareMap.get(DcMotorEx.class, "bl");
@@ -49,8 +51,7 @@ public class FlywheelTune extends LinearOpMode {
 
         // Zero power behavior
         flywheel.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
-
-        System.out.println("Chassis + Flywheel + servo ready");
+        
         telemetry.update();
         waitForStart();
 
@@ -61,27 +62,26 @@ public class FlywheelTune extends LinearOpMode {
         BinarySearch high = null;
 
         boolean dpad_up = false, dpad_down = false, dpad_right = false;
-        boolean a = false, b = false, x = false,y = false;
+        boolean a = false, b = false, x = false, y = false;
 
         while (opModeIsActive()) {
             switch (tuneMode) {
                 case "first goal":
                     if (gamepad1.dpad_up && !dpad_up) {
-                        System.out.println("Launched too far at speed " + start.getMid());
+                        message = ("Launched too far at speed " + start.getMid());
                         start.goLow();
                         flywheel.setVelocity(start.getMid());
                     }
                     if (gamepad1.dpad_down && !dpad_down) {
-                        System.out.println("Launched too close at speed " + start.getMid());
+                        message = ("Launched too close at speed " + start.getMid());
                         start.goHigh();
                         flywheel.setVelocity(start.getMid());
                     }
                     if (gamepad1.dpad_right && !dpad_right) {
-                        System.out.println("Scored at speed " + start.getMid());
+                        message = ("Scored at speed " + start.getMid());
                         low = new BinarySearch(start.getLow(), start.getMid());
                         tuneMode = "find lower bound";
                         flywheel.setVelocity(low.getMid());
-                        System.out.println("Finding lower bound");
                     }
                     if (gamepad1.x && !x) {
                         tuneMode = "";
@@ -94,54 +94,54 @@ public class FlywheelTune extends LinearOpMode {
                 case "find lower bound":
                     telemetry.addData("Lower bound", "%.3f", low.getHigh());
                     if (gamepad1.dpad_down && !dpad_down) {
-                        System.out.println("Launched too close at speed " + low.getMid());
+                        message = ("Launched too close at speed " + low.getMid());
                         low.goHigh();
                         flywheel.setVelocity(low.getMid());
                     }
                     if (gamepad1.dpad_right && !dpad_right) {
-                        System.out.println("Scored at speed " + low.getMid());
+                        message = ("Scored at speed " + low.getMid());
                         low.goLow();
                         flywheel.setVelocity(low.getMid());
                     }
                     if (gamepad1.a && !a) {
                         low = new BinarySearch(start.getLow(), start.getMid());
                         flywheel.setVelocity(low.getMid());
-                        System.out.println("Finding lower bound");
+                        message = ("Finding lower bound");
                     }
                     if (gamepad1.y && !y) {
                         high = new BinarySearch(start.getMid(), start.getHigh());
                         tuneMode = "find upper bound";
                         flywheel.setVelocity(high.getMid());
-                        System.out.println("Finding upper bound");
+                        message = ("Finding upper bound");
                     }
                     if (gamepad1.b && !b) {
                         if (high == null) {
-                            System.out.println("Cannot produce results: test upper bound first");
+                            message = ("Cannot produce results: test upper bound first");
                         } else {
-                            System.out.println("The best speed at distance " + getDistance() + " is " + (low.getHigh() + high.getLow()) / 2);
+                            message = ("The best speed at distance " + getDistance() + " is " + (low.getHigh() + high.getLow()) / 2);
                         }
                     }
                     if (gamepad1.x && !x) {
                         if (high != null) {
-                            System.out.println("The best speed at distance " + getDistance() + " is " + (low.getHigh() + high.getLow()) / 2);
+                            message = ("The best speed at distance " + getDistance() + " is " + (low.getHigh() + high.getLow()) / 2);
                         }
                         tuneMode = "";
                         start = null;
                         low = null;
                         high = null;
                         flywheel.setVelocity(0);
-                        System.out.println("Ending test");
+                        message = ("Ending test");
                     }
                     break;
                 case "find upper bound":
                     telemetry.addData("Upper bound", "%.3f", high.getLow());
                     if (gamepad1.dpad_up && !dpad_up) {
-                        System.out.println("Launched too far at speed " + high.getMid());
+                        message = ("Launched too far at speed " + high.getMid());
                         high.goLow();
                         flywheel.setVelocity(high.getMid());
                     }
                     if (gamepad1.dpad_right && !dpad_right) {
-                        System.out.println("Scored at speed " + high.getMid());
+                        message = ("Scored at speed " + high.getMid());
                         high.goHigh();
                         flywheel.setVelocity(high.getMid());
                     }
@@ -149,24 +149,24 @@ public class FlywheelTune extends LinearOpMode {
                         low = new BinarySearch(start.getLow(), start.getMid());
                         tuneMode = "find lower bound";
                         flywheel.setVelocity(low.getMid());
-                        System.out.println("Finding lower bound");
+                        message = ("Finding lower bound");
                     }
                     if (gamepad1.y && !y) {
                         high = new BinarySearch(start.getMid(), start.getHigh());
                         flywheel.setVelocity(high.getMid());
-                        System.out.println("Finding upper bound");
+                        message = ("Finding upper bound");
                     }
                     if (gamepad1.b && !b) {
-                        System.out.println("The best speed at distance " + getDistance() + " is " + (low.getHigh() + high.getLow()) / 2);
+                        message = ("The best speed at distance " + getDistance() + " is " + (low.getHigh() + high.getLow()) / 2);
                     }
                     if (gamepad1.x && !x) {
-                        System.out.println("The best speed at distance " + getDistance() + " is " + (low.getHigh() + high.getLow()) / 2);
+                        message = ("The best speed at distance " + getDistance() + " is " + (low.getHigh() + high.getLow()) / 2);
                         tuneMode = "";
                         start = null;
                         low = null;
                         high = null;
                         flywheel.setVelocity(0);
-                        System.out.println("Ending test");
+                        message = ("Ending test");
                     }
                     break;
                 default:
@@ -175,14 +175,12 @@ public class FlywheelTune extends LinearOpMode {
                     if (gamepad1.x && !x) {
                         chassis.stop();
 
-                        System.out.println("Starting tuning at distance " + getDistance());
+                        message = ("Starting tuning at distance " + getDistance());
                         tuneMode = "first goal";
                         start = new BinarySearch(0, 3000);
                         flywheel.setVelocity(start.getMid());
                     }
             }
-            
-            transfer.update();
 
             dpad_up = gamepad1.dpad_up;
             dpad_down = gamepad1.dpad_down;
@@ -191,8 +189,12 @@ public class FlywheelTune extends LinearOpMode {
             b = gamepad1.b;
             x = gamepad1.x;
             y = gamepad1.y;
+            
+            transfer.update();
 
             telemetry.addData("Flywheel", "%.2f", flywheel.getVelocity());
+            telemetry.addLine(message);
+            telemetry.addLine(tuneMode);
             telemetry.update();
         }
     }
