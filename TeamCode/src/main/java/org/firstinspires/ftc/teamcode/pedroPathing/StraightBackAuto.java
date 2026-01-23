@@ -34,7 +34,6 @@ public class StraightBackAuto extends OpMode {
     private DcMotorEx intakeMotor;
     private DcMotorEx kickerMotor;
     private DcMotorEx flywheelMotor;
-    private Telemetry telemetry;
 
     public void buildPaths() {
         //put in coordinates for starting pos > ending pos
