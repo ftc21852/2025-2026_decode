@@ -9,6 +9,9 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 @Autonomous
 public class StraightBackAuto extends OpMode {
@@ -28,6 +31,10 @@ public class StraightBackAuto extends OpMode {
     private final Pose startPose = new Pose(20.392546583850923,122.35527950310559, Math.toRadians(135));
     private final Pose shootPose = new Pose(59.39875776397515, 83.58260869565218, Math.toRadians(135));
     private PathChain driveStartPosShootPos;
+    private DcMotorEx intakeMotor;
+    private DcMotorEx kickerMotor;
+    private DcMotorEx flywheelMotor;
+    private Telemetry telemetry;
 
     public void buildPaths() {
         //put in coordinates for starting pos > ending pos
@@ -73,6 +80,21 @@ public class StraightBackAuto extends OpMode {
         opModeTimer.resetTimer();
         follower = Constants.createFollower(hardwareMap);
         //TODO add in any other init mechanisms
+        kickerMotor = hardwareMap.get(DcMotorEx.class, "kicker");
+        flywheelMotor = hardwareMap.get(DcMotorEx.class, "flywheel");
+        intakeMotor = hardwareMap.get(DcMotorEx.class, "intake");
+
+        intakeMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        kickerMotor.setDirection(DcMotorEx.Direction.FORWARD);
+        flywheelMotor.setDirection(DcMotorEx.Direction.FORWARD);
+
+        intakeMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
+        kickerMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        flywheelMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
+
+        intakeMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        kickerMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        flywheelMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         buildPaths();
         follower.setPose(startPose);
