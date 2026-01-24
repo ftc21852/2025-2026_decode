@@ -1,15 +1,17 @@
-package org.firstinspires.ftc.teamcode.TeleOp;
+package org.firstinspires.ftc.teamcode.teleOp;
 
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-import java.util.Date;
+import org.firstinspires.ftc.teamcode.components.Camera;
+import org.firstinspires.ftc.teamcode.components.Chassis;
+import org.firstinspires.ftc.teamcode.components.Flywheel;
+import org.firstinspires.ftc.teamcode.components.Lift;
+import org.firstinspires.ftc.teamcode.components.Transfer;
 
 @TeleOp(name = "One Driver")
-
 public class OneDriver extends LinearOpMode {
     @Override
     public void runOpMode() {
@@ -25,24 +27,22 @@ public class OneDriver extends LinearOpMode {
         DcMotorEx kickerMotor = hardwareMap.get(DcMotorEx.class, "kicker");     // 2
         DcMotorEx flywheelMotor = hardwareMap.get(DcMotorEx.class, "flywheel"); // 3
 
-        // Limelight3A limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        Limelight3A limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
         Chassis chassis = new Chassis(gamepad1, frontLeft, backLeft, frontRight, backRight, telemetry);
-        // Transfer transfer = new Transfer(gamepad1, intakeMotor, kickerMotor, telemetry);
-        // Flywheel flywheel = new Flywheel(gamepad1, flywheelMotor, telemetry);
-        ArtifactSystem artifactSystem = new ArtifactSystem(gamepad1, intakeMotor, kickerMotor, flywheelMotor, telemetry);
+        Transfer transfer = new Transfer(gamepad1, intakeMotor, kickerMotor, telemetry);
+        Flywheel flywheel = new Flywheel(gamepad1, flywheelMotor, telemetry);
         Lift lift = new Lift(gamepad1, liftMotor, telemetry);
-        // Camera camera = new Camera(limelight);
+        Camera camera = new Camera(limelight);
 
         waitForStart();
 
         while (opModeIsActive()) {
             chassis.update();
-            artifactSystem.update();
-            // transfer.update();
-            // flywheel.update((int) (new Date().getTime() - transfer.loopStartTime));
+            transfer.update();
+            flywheel.update();
             lift.update();
-            // telemetry.addData("Limelight distance", camera.getDistance());
+            telemetry.addData("Limelight distance", camera.getGroundDistance());
             telemetry.update();
         }
     }

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TeleOp;
+package org.firstinspires.ftc.teamcode.components;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -113,7 +113,7 @@ public class ArtifactSystem {
         }
         leftBumperPressed = gamepad.left_bumper;
         if (flywheelRunning) {
-            double baseSpeed = 1500;
+            double baseSpeed = 1330;
             double shootTimeElapsed = new Date().getTime() - shootStartTime;
             double speedDecrease = 0; // Math.max(shootTimeElapsed * SPEED_DECREASE_PER_MS, 0);
 
@@ -126,13 +126,6 @@ public class ArtifactSystem {
                 telemetry.addLine(" /    \\    |_/");
                 telemetry.addLine("|      |   |  \\");
                 telemetry.addLine(" \\ _ /    |   \\");
-                /*
-           |
-   _      |
- /    \    |_/
-|      |   |  \
- \ _ /    |   \
-                 */
             }
         } else {
             flywheelMotor.setVelocity(0);

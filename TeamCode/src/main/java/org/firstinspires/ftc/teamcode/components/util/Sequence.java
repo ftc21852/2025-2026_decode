@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TeleOp;
+package org.firstinspires.ftc.teamcode.components.util;
 
 import java.util.*;
 import java.util.function.BooleanSupplier;
@@ -34,28 +34,31 @@ public class Sequence {
         this.hasRun = false;
     }
 
-    public void run(Runnable function) {
+    public Sequence run(Runnable function) {
         if (head == null) {
             head = tail = new Node(function);
         } else {
             tail = tail.next = new Node(function);
         }
+        return this;
     }
 
-    public void waitUntil(BooleanSupplier condition) {
+    public Sequence waitUntil(BooleanSupplier condition) {
         if (head == null) {
             head = tail = new Node(condition);
         } else {
             tail = tail.next = new Node(condition);
         }
+        return this;
     }
 
-    public void wait(int timeInMs) {
+    public Sequence wait(int timeInMs) {
         if (head == null) {
             head = tail = new Node(timeInMs);
         } else {
             tail = tail.next = new Node(timeInMs);
         }
+        return this;
     }
 
     public boolean begin() {

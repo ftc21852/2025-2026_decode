@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TeleOp.FlywheelUtil;
+package org.firstinspires.ftc.teamcode.components.util;
 
 public class Matrix {
     private final int rows;
@@ -21,6 +21,10 @@ public class Matrix {
         this.rows = rows;
         this.cols = cols;
         this.entries = new double[rows][cols];
+    }
+
+    public static Matrix fromVector(double[] components) {
+        return new Matrix(new double[][]{components}).transposed();
     }
 
     public String toString() {
@@ -67,7 +71,7 @@ public class Matrix {
         return result;
     }
 
-    public Matrix t() {
+    public Matrix transposed() {
         Matrix result = new Matrix(this.cols, this.rows);
         for (int i = 0; i < this.cols; i++) {
             for (int j = 0; j < this.rows; j++) {
@@ -106,6 +110,6 @@ public class Matrix {
         }
         Matrix B = new Matrix(b);
 
-        System.out.println(A.t().times(A).inverse().times(A.t()).times(B));
+        System.out.println(A.transposed().times(A).inverse().times(A.transposed()).times(B));
     }
 }
