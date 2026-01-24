@@ -24,22 +24,14 @@ public class RedAuto extends OpMode {
     Flywheel flywheel;
 
     private void addShootToSequence() {
-        sequence.run(() -> flywheel.setVelocity(1140));
+        sequence.run(() -> flywheel.setVelocity(1110));
         sequence.run(transfer::intake);
         sequence.wait(500);
         sequence.run(transfer::stop);
         sequence.wait(500);
         sequence.run(transfer::shoot);
-        sequence.run(() -> flywheel.setVelocity(1050));
+        sequence.run(() -> flywheel.setVelocity(1060));
         sequence.wait(1800);
-        /*
-        sequence.run(transfer::intake);
-        sequence.wait(500);
-        sequence.run(transfer::stop);
-        sequence.wait(500);
-        sequence.run(transfer::shoot);
-        sequence.wait(600);
-         */
     }
 
     public PathChain pathBetween(Pose start, Pose end) {
@@ -64,12 +56,12 @@ public class RedAuto extends OpMode {
         flywheelMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         Pose startPose = new Pose(24,123, Math.toRadians(90));
-        Pose shootPose = new Pose(60, 84, Math.toRadians(135));
-        Pose beforeRow1 = new Pose(60, 84, Math.toRadians(90));
+        Pose shootPose = new Pose(56, 88, Math.toRadians(135));
+        Pose beforeRow1 = new Pose(60, 100, Math.toRadians(90));
         Pose afterRow1 = new Pose(60, 135, Math.toRadians(90));
-        Pose beforeRow2 = new Pose(84, 84, Math.toRadians(90));
+        Pose beforeRow2 = new Pose(84, 100, Math.toRadians(90));
         Pose afterRow2 = new Pose(84, 135, Math.toRadians(90));
-        Pose beforeRow3 = new Pose(108, 84, Math.toRadians(90));
+        Pose beforeRow3 = new Pose(108, 100, Math.toRadians(90));
         Pose afterRow3 = new Pose(108, 135, Math.toRadians(90));
 
         sequence = new Sequence();
@@ -111,6 +103,8 @@ public class RedAuto extends OpMode {
         sequence.waitUntil(() -> !follower.isBusy());
 
         addShootToSequence();
+
+        sequence.run(() -> follower.followPath(pathBetween(shootPose, beforeRow2)));
 
         follower.setPose(startPose);
     }
