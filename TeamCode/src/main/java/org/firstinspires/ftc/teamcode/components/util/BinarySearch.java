@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.TeleOp.FlywheelUtil;
+package org.firstinspires.ftc.teamcode.components.util;
 
 public class BinarySearch {
     private double low;

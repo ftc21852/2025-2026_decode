@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pedroPathing;
+package org.firstinspires.ftc.teamcode.auto;
 
 import com.pedropathing.control.FilteredPIDFCoefficients;
 import com.pedropathing.control.PIDFCoefficients;
@@ -27,17 +27,19 @@ public class Constants {
 
     public static MecanumConstants driveConstants = new MecanumConstants()
             .maxPower(1.0)
-            .rightFrontMotorName("fr")
-            .rightRearMotorName("br")
-            .leftRearMotorName("bl")
+
             .leftFrontMotorName("fl")
+            .rightFrontMotorName("fr")
+            .leftRearMotorName("bl")
+            .rightRearMotorName("br")
+
             .leftFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
-            .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
+            .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
+
             .xVelocity(77.6160110113189)
-            .yVelocity(64.00160854069267)
-            ;
+            .yVelocity(64.00160854069267);
     public static PathConstraints pathConstraints = new PathConstraints(0.99,
             100,
             1.2,

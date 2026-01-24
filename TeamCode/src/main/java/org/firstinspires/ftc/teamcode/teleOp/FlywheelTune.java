@@ -1,14 +1,14 @@
-package org.firstinspires.ftc.teamcode.TeleOp.Testing;
+package org.firstinspires.ftc.teamcode.teleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-import org.firstinspires.ftc.teamcode.TeleOp.Chassis;
-import org.firstinspires.ftc.teamcode.TeleOp.Transfer;
-import org.firstinspires.ftc.teamcode.TeleOp.FlywheelUtil.BinarySearch;
+import org.firstinspires.ftc.teamcode.components.Chassis;
+import org.firstinspires.ftc.teamcode.components.Transfer;
+import org.firstinspires.ftc.teamcode.components.util.BinarySearch;
 
-@TeleOp(name = "Flywheel Tuning")
+@TeleOp(name = "Flywheel Tuning", group = "Test")
 public class FlywheelTune extends LinearOpMode {
     public double getDistance() {
         return 0;
