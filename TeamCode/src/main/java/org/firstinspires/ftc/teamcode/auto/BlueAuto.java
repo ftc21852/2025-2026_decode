@@ -1,22 +1,22 @@
 package org.firstinspires.ftc.teamcode.auto;
 
-import com.pedropathing.geometry.BezierCurve;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.components.Flywheel;
-import org.firstinspires.ftc.teamcode.components.util.Sequence;
 import org.firstinspires.ftc.teamcode.components.Transfer;
+import org.firstinspires.ftc.teamcode.components.util.Sequence;
 
-@Autonomous (name = "Red")
-public class RedAuto extends OpMode {
+@Autonomous (name = "Blue")
+public class BlueAuto extends OpMode {
     private Follower follower;
     private Timer opModeTimer;
     private Sequence sequence;
@@ -52,21 +52,22 @@ public class RedAuto extends OpMode {
 
         transfer = new Transfer(null, intakeMotor, null, telemetry);
         flywheel = new Flywheel(null, flywheelMotor, flywheelMotor, null, null, telemetry);
+
         flywheelMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        Pose startPose = new Pose(24,123, Math.toRadians(90));
-        Pose shootPose = new Pose(56, 88, Math.toRadians(135));
-        Pose beforeRow1 = new Pose(60, 100, Math.toRadians(90));
-        Pose afterRow1 = new Pose(60, 128, Math.toRadians(90));
-        Pose pushGate = new Pose(70, 130, Math.toRadians(180));
-        Pose beforeRow2 = new Pose(84, 100, Math.toRadians(90));
-        Pose afterRow2 = new Pose(84, 135, Math.toRadians(90));
-        Pose beforeRow3 = new Pose(108, 100, Math.toRadians(90));
-        Pose afterRow3 = new Pose(108, 135, Math.toRadians(90));
+        Pose startPose = new Pose(24,21, Math.toRadians(-90));
+        Pose shootPose = new Pose(56, 56, Math.toRadians(-135));
+        Pose beforeRow1 = new Pose(60, 44, Math.toRadians(-90));
+        Pose afterRow1 = new Pose(60, 16, Math.toRadians(-90));
+        Pose pushGate = new Pose(70, 14, Math.toRadians(-180));
+        Pose beforeRow2 = new Pose(84, 44, Math.toRadians(-90));
+        Pose afterRow2 = new Pose(84, 9, Math.toRadians(-90));
+        Pose beforeRow3 = new Pose(108, 44, Math.toRadians(-90));
+        Pose afterRow3 = new Pose(108, 9, Math.toRadians(-90));
 
         PathChain gatePath = follower.pathBuilder()
-                .addPath(new BezierCurve(afterRow1, new Pose(65, 124), pushGate))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .addPath(new BezierCurve(afterRow1, new Pose(65, 20), pushGate))
+                .setConstantHeadingInterpolation(Math.toRadians(-180))
                 .build();
 
         sequence = new Sequence();

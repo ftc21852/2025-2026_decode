@@ -40,10 +40,10 @@ public class Chassis {
         double backLeftPower = y + x - rx;
         double backRightPower = y - x + rx;
 
-        frontLeft.setPower(frontLeftPower * 0.6);
-        frontRight.setPower(frontRightPower * 0.6);
-        backLeft.setPower(backLeftPower * 0.6);
-        backRight.setPower(backRightPower * 0.6);
+        frontLeft.setPower(frontLeftPower * 0.8);
+        frontRight.setPower(frontRightPower * 0.8);
+        backLeft.setPower(backLeftPower * 0.8);
+        backRight.setPower(backRightPower * 0.8);
 
         telemetry.addData("X-velocity", x);
         telemetry.addData("Y-velocity", y);
