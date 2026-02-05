@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.function.BooleanSupplier;
 
 public class Sequence {
-    private static class Node {
+    protected static class Node {
         private Runnable function;
         private BooleanSupplier condition;
         private int duration;
@@ -24,7 +24,7 @@ public class Sequence {
     }
 
     private Node head;
-    private Node tail;
+    protected Node tail;
     private Node currentNode;
     private long timeOfNextState;
     private boolean isRunning;
@@ -32,6 +32,7 @@ public class Sequence {
 
     public Sequence() {
         this.hasRun = false;
+        this.isRunning = false;
     }
 
     public Sequence run(Runnable function) {

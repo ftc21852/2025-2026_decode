@@ -1,14 +1,16 @@
 package org.firstinspires.ftc.teamcode.components;
 
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import org.firstinspires.ftc.teamcode.components.util.Matrix;
 
-import java.util.ArrayList;
 import java.util.function.Function;
+import java.util.Date;
 
 public class Flywheel {
 
@@ -18,15 +20,21 @@ public class Flywheel {
     // ------------------------------------------------------------ //
 
     private final double[] x = {}; // distance
-    private final double[] v = { 1218, 1330, 1500 }; // power
+    private final double[] v = { 1218, 1330, 1500 }; // speed
 
     private Gamepad gamepad;
-    private DcMotorEx flywheel;
+    private DcMotorEx flywheelTop;
+    private DcMotorEx flywheelBottom;
+    private Servo hoodServo;
+    private Servo led;
     private Telemetry telemetry;
 
     private boolean flywheelRunning = false;
-    private boolean leftBumperPressed = false;
-    private int flywheelSpeed;
+    private double flywheelSpeed;
+
+    private int hoodOffsetTime;
+    private int hoodDirection;
+    private long lastPollTime;
 
     // private final Function<Double, Double> distanceToSpeed = getSpeedFunction(x, v);
 
@@ -51,16 +59,27 @@ public class Flywheel {
         return distance -> Math.sqrt(1 / (c / distance + d / (distance * distance)));
     }
 
-    public Flywheel(Gamepad gamepad, DcMotorEx flywheel, Telemetry telemetry) {
+    public Flywheel(Gamepad gamepad, DcMotorEx flywheelTop, DcMotorEx flywheelBottom, Servo hoodServo, Servo led, Telemetry telemetry) {
         this.gamepad = gamepad;
-        this.flywheel = flywheel;
+        this.flywheelTop = flywheelTop;
+        this.flywheelBottom = flywheelBottom;
+        this.hoodServo = hoodServo;
+        this.led = led;
         this.telemetry = telemetry;
 
-        flywheel.setDirection(DcMotorEx.Direction.FORWARD);
+        flywheelTop.setDirection(DcMotorEx.Direction.FORWARD);
+        flywheelTop.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
+        flywheelTop.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-        flywheel.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
+        flywheelBottom.setDirection(DcMotorEx.Direction.FORWARD);
+        flywheelBottom.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
+        flywheelBottom.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-        flywheel.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        hoodServo.setDirection(Servo.Direction.REVERSE);
+        hoodOffsetTime = 0;
+        hoodDirection = 0;
+
+        flywheelSpeed = 1260;
     }
 
     public void printOk() {
@@ -71,27 +90,28 @@ public class Flywheel {
         telemetry.addLine(" \\ _ /    |    \\");
     }
 
-    public void setVelocity(double speed) {
+    public void setSpeed(double speed) {
         flywheelSpeed = (int) speed;
-        flywheel.setVelocity(speed);
+        flywheelTop.setVelocity(speed);
+        flywheelBottom.setVelocity(speed);
     }
 
-    public boolean upToSpeed() {
-        return Math.abs(flywheel.getVelocity() - flywheelSpeed) <= 10;
+    public double getNominalSpeed() {
+        return flywheelSpeed;
+    }
+
+    public double getActualSpeed() {
+        return (flywheelTop.getVelocity() + flywheelBottom.getVelocity()) / 2;
+    }
+
+    public boolean speedIsOffByLessThan(double error) {
+        return Math.abs(this.getActualSpeed() - flywheelSpeed) < error;
     }
 
     public void update() {
-        if (gamepad.x) {
-            flywheelSpeed = 1210;
-        } else if (gamepad.y) {
-            flywheelSpeed = 1330;
-        } else if (gamepad.b) {
-            flywheelSpeed = 1500;
-        }
-        if (gamepad.left_bumper && !leftBumperPressed) {
+        if (gamepad.leftBumperWasPressed()) {
             flywheelRunning = !flywheelRunning;
         }
-        leftBumperPressed = gamepad.left_bumper;
         if (flywheelRunning) {
             /*
             double distance = camera.getDistance();
@@ -99,26 +119,40 @@ public class Flywheel {
             telemetry.addData("Distance from goal", distance);
             telemetry.addData("Flywheel nominal speed", flywheelSpeed);
             /*/
-            switch (flywheelSpeed) {
-                case 1210:
-                    telemetry.addData("Speed setting", "Close");
-                    break;
-                case 1330:
-                    telemetry.addData("Speed setting", "Medium");
-                    break;
-                case 1500:
-                    telemetry.addData("Speed setting", "Far");
-                    break;
-            }
-            //*/
 
-            flywheel.setVelocity(flywheelSpeed);
-
-            if (upToSpeed()) {
+            setSpeed(1260);
+            telemetry.addData("Flywheel nominal speed", flywheelSpeed);
+            telemetry.addData("Flywheel speed", this.getActualSpeed());
+            if (speedIsOffByLessThan(5)) {
                 printOk();
             }
         } else {
-            flywheel.setVelocity(0);
+            this.setSpeed(0);
         }
+
+        if (gamepad.dpadUpWasPressed()) {
+            hoodDirection = 1;
+        } else if (gamepad.dpadDownWasPressed()) {
+            hoodDirection = -1;
+        }
+        if (gamepad.dpadUpWasReleased()) {
+            hoodDirection = gamepad.dpad_down ? -1 : 0;
+        }
+        if (gamepad.dpadDownWasReleased()) {
+            hoodDirection = gamepad.dpad_up ? 1 : 0;
+        }
+        long currentTime = new Date().getTime();
+        hoodOffsetTime += (int) (currentTime - lastPollTime) * hoodDirection;
+        if (hoodOffsetTime > 1000) {
+            hoodOffsetTime = 1000;
+        } else if (hoodOffsetTime < 0) {
+            hoodOffsetTime = 0;
+        }
+        hoodServo.setPosition(hoodOffsetTime * 0.7 / 1000);
+        led.setPosition(0.5);
+        lastPollTime = currentTime;
+
+        // telemetry.addData("led position", led.getPosition());
+        telemetry.addData("hood position", hoodServo.getPosition());
     }
 }
