@@ -13,8 +13,23 @@ import org.firstinspires.ftc.teamcode.components.Flywheel;
 import org.firstinspires.ftc.teamcode.components.Lift;
 import org.firstinspires.ftc.teamcode.components.Transfer;
 
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.HeadingInterpolator;
+import com.pedropathing.paths.Path;
+import com.pedropathing.paths.PathChain;
+
+import java.util.function.Supplier;
+
 @TeleOp(name = "One Driver")
 public class OneDriver extends LinearOpMode {
+
+    private Follower follower;
+    private boolean automatedDrive = false;
+    private static final Pose SHOOTING_POSE = new Pose(60, 60, Math.toRadians(-135));
+    private Supplier<PathChain> toShootingPath;
+
     @Override
     public void runOpMode() {
         // ctrl hub
@@ -33,14 +48,16 @@ public class OneDriver extends LinearOpMode {
         Servo hoodServo = hardwareMap.get(Servo.class, "hood");
 
         Limelight3A limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        //TODO FIX THIS HAS TO BE END AUTO POSE
+        Chassis chassis = new Chassis(gamepad1, frontLeft, backLeft, frontRight, backRight, telemetry, new Pose(24,21, Math.toRadians(-90)), hardwareMap);
 
-        Chassis chassis = new Chassis(gamepad1, frontLeft, backLeft, frontRight, backRight, telemetry);
         Transfer transfer = new Transfer(gamepad1, intakeMotor, gateServo, telemetry);
         Flywheel flywheel = new Flywheel(gamepad1, flywheelTop, flywheelBottom, hoodServo, led, telemetry);
         Lift lift = new Lift(gamepad1, liftMotor, telemetry);
         Camera camera = new Camera(limelight);
 
         Auto autoFlywheel = new Auto(null);
+
 
         autoFlywheel.
                 run(flywheel, 1110).
@@ -55,14 +72,37 @@ public class OneDriver extends LinearOpMode {
                 run(autoFlywheel::stop).
         stop();
 
+        toShootingPath = () -> chassis.getFollower().pathBuilder()
+                .addPath(new Path(new BezierLine(chassis.getFollower()::getPose, SHOOTING_POSE)))
+                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(
+                        chassis.getFollower()::getHeading, SHOOTING_POSE.getHeading(), 0.8))
+                .build();
+
         waitForStart();
+        chassis.startTeleOp();
 
         while (opModeIsActive()) {
-            chassis.update();
+            chassis.pedroUpdate();
             transfer.update();
             flywheel.update();
             lift.update();
             autoFlywheel.update();
+
+            if (!automatedDrive) {
+                chassis.teleOpDrive();
+            }
+
+            if (gamepad1.bWasPressed() && !automatedDrive) {
+                chassis.followPath(toShootingPath.get());
+                automatedDrive = true;
+            }
+
+            if (automatedDrive && !chassis.isBusy()) {
+                automatedDrive = false;
+                chassis.startTeleOp();
+                autoFlywheel.begin();
+            }
+
 
             if (gamepad1.aWasPressed()) {
                 autoFlywheel.begin();
