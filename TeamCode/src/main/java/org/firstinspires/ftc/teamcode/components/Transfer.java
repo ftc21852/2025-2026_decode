@@ -6,11 +6,15 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.util.Date;
+
 public class Transfer {
     private Gamepad gamepad;
     private DcMotorEx intakeMotor;
     private Servo gateServo;
     private Telemetry telemetry;
+    private long startShootTime = 0;
+    private boolean override = false;
 
     public Transfer(Gamepad gamepad, DcMotorEx intakeMotor, Servo gateServo, Telemetry telemetry) {
         this.gamepad = gamepad;
@@ -26,35 +30,54 @@ public class Transfer {
         this.telemetry = telemetry;
     }
 
-    public void intake() {
-        intakeMotor.setPower(0.7);
-        gateServo.setPosition(0);
+    public void forward() {
+        intakeMotor.setVelocity(2000);
     }
 
     public void reverse() {
-        intakeMotor.setPower(-0.7);
-        gateServo.setPosition(0);
-    }
-
-    public void shoot() {
-        intakeMotor.setPower(0.5);
-        gateServo.setPosition(0.4);
+        intakeMotor.setVelocity(-1700);
     }
 
     public void stop() {
-        intakeMotor.setPower(0);
+        intakeMotor.setVelocity(0);
+    }
+
+    public void openGate() {
+        gateServo.setPosition(0.4);
+    }
+
+    public void closeGate() {
+        gateServo.setPosition(0);
+    }
+
+    public void override() {
+        override = true;
+    }
+
+    public void stopOverride() {
+        override = false;
     }
 
     public void update() {
+        if (override) {
+            return;
+        }
         if (gamepad.left_trigger > 0.1) {
-            telemetry.addLine("shoot");
-            shoot();
+            if (gateServo.getPosition() < 0.2) {
+                startShootTime = new Date().getTime() + 500;
+            }
+            if (new Date().getTime() > startShootTime) {
+                forward();
+            } else {
+                stop();
+            }
+            openGate();
         } else if (gamepad.right_trigger > 0.1) {
-            telemetry.addLine("intake");
-            intake();
+            forward();
+            closeGate();
         } else if (gamepad.right_bumper) {
-            telemetry.addLine("reverse");
             reverse();
+            closeGate();
         } else {
             stop();
         }

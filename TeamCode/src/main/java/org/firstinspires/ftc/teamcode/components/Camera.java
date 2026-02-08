@@ -4,6 +4,7 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes.FiducialResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
@@ -13,12 +14,15 @@ import java.util.List;
 
 public class Camera {
     private Limelight3A limelight;
+    private Telemetry telemetry;
 
-    public Camera(Limelight3A limelight) {
+    public Camera(Limelight3A limelight, Telemetry telemetry) {
         this.limelight = limelight;
         limelight.setPollRateHz(100);
         limelight.pipelineSwitch(0);
         limelight.start();
+
+        this.telemetry = telemetry;
     }
 
     public double getGroundDistance() {
@@ -30,15 +34,12 @@ public class Camera {
         if (tags.isEmpty()) {
             return Double.NEGATIVE_INFINITY;
         }
-        Pose3D pose = tags.get(0).getTargetPoseCameraSpace();
+        Pose3D pose = tags.get(0).getCameraPoseTargetSpace();
 
         Position pos = pose.getPosition();
-        double pitch = pose.getOrientation().getPitch(AngleUnit.RADIANS);
-        Matrix pitchMatrix = new Matrix(new double[][]{
-                {Math.cos(pitch), Math.sin(pitch)},
-                {-Math.sin(pitch), Math.cos(pitch)},
-        });
-        Matrix ZY = pitchMatrix.inverse().times(Matrix.fromVector(new double[]{pos.z, pos.y}));
-        return Math.hypot(pos.x, ZY.get(0, 0));
+        return Math.hypot(pos.x, pos.z);
+    }
+
+    public void update() {
     }
 }

@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.teleOp;
 
+import org.firstinspires.ftc.teamcode.auto.Constants;
+import com.pedropathing.follower.Follower;
+
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -34,27 +38,40 @@ public class OneDriver extends LinearOpMode {
 
         Limelight3A limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
-        Chassis chassis = new Chassis(gamepad1, frontLeft, backLeft, frontRight, backRight, telemetry);
+        Follower follower = Constants.createFollower(hardwareMap);
+
+        Chassis chassis = new Chassis(gamepad1, frontLeft, backLeft, frontRight, backRight, follower, telemetry);
         Transfer transfer = new Transfer(gamepad1, intakeMotor, gateServo, telemetry);
-        Flywheel flywheel = new Flywheel(gamepad1, flywheelTop, flywheelBottom, hoodServo, led, telemetry);
+        Camera camera = new Camera(limelight, telemetry);
+        Flywheel flywheel = new Flywheel(gamepad1, flywheelTop, flywheelBottom, hoodServo, led, camera, telemetry);
         Lift lift = new Lift(gamepad1, liftMotor, telemetry);
-        Camera camera = new Camera(limelight);
 
         Auto autoFlywheel = new Auto(null);
+        autoFlywheel
+                .run(transfer::override)
+                .run(flywheel::override)
+                .run(flywheel, 1260)
+                .run(transfer::closeGate)
+                .run(transfer::forward)
+                .wait(1.0)
+                .run(transfer::openGate)
+                .wait(2.0)
+                .run(transfer::stopOverride)
+                .run(flywheel::stopOverride)
+                .run(autoFlywheel::stop)
+                .stop();
 
-        autoFlywheel.
-                run(flywheel, 1110).
-                run(transfer::intake).
-                wait(0.5).
-                stop(transfer).
-                wait(0.5).
-                run(transfer::shoot).
-                run(flywheel, 1060).
-                wait(1.8).
-                stop(flywheel).
-                run(autoFlywheel::stop).
-        stop();
+        Auto autoPath = new Auto(follower);
+        autoPath
+                .startAt(5.1, 5.0) .facing(3)
+                .anchor()
+                .run(chassis::override)
+                .goTo(3.5, 3.5)
+                .run(chassis::stopOverride)
+                .run(autoPath::stop)
+                .stop();
 
+        follower.setStartingPose(new Pose(5.1 * 24, 5.0 * 24, 0));
         waitForStart();
 
         while (opModeIsActive()) {
@@ -63,12 +80,12 @@ public class OneDriver extends LinearOpMode {
             flywheel.update();
             lift.update();
             autoFlywheel.update();
+            camera.update();
+            follower.update();
 
-            if (gamepad1.aWasPressed()) {
+            if (gamepad1.xWasPressed()) {
                 autoFlywheel.begin();
             }
-
-            telemetry.addData("Limelight distance", camera.getGroundDistance());
             telemetry.update();
         }
     }

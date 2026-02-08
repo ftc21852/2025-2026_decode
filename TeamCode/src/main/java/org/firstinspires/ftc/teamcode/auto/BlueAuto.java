@@ -25,11 +25,11 @@ public class BlueAuto extends OpMode {
 
     private void addShootToSequence() {
         sequence.run(() -> flywheel.setSpeed(1110));
-        sequence.run(transfer::intake);
+        sequence.run(transfer::forward);
         sequence.wait(500);
         sequence.run(transfer::stop);
         sequence.wait(500);
-        sequence.run(transfer::shoot);
+        sequence.run(transfer::forward);
         sequence.run(() -> flywheel.setSpeed(1050));
         sequence.wait(1800);
     }
@@ -51,7 +51,7 @@ public class BlueAuto extends OpMode {
         DcMotorEx flywheelMotor = hardwareMap.get(DcMotorEx.class, "flywheel");
 
         transfer = new Transfer(null, intakeMotor, null, telemetry);
-        flywheel = new Flywheel(null, flywheelMotor, flywheelMotor, null, null, telemetry);
+        flywheel = new Flywheel(null, flywheelMotor, flywheelMotor, null, null, null, telemetry);
 
         flywheelMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -76,7 +76,7 @@ public class BlueAuto extends OpMode {
 
         addShootToSequence();
 
-        sequence.run(transfer::intake);
+        sequence.run(transfer::forward);
         sequence.run(() -> flywheel.setSpeed(0));
         sequence.wait(250);
         sequence.run(() -> follower.followPath(pathBetween(beforeRow1, afterRow1)));
@@ -89,7 +89,7 @@ public class BlueAuto extends OpMode {
 
         addShootToSequence();
 
-        sequence.run(transfer::intake);
+        sequence.run(transfer::forward);
         sequence.run(() -> flywheel.setSpeed(0));
         sequence.wait(250);
         sequence.run(() -> follower.followPath(pathBetween(shootPose, beforeRow2)));
@@ -101,7 +101,7 @@ public class BlueAuto extends OpMode {
 
         addShootToSequence();
 
-        sequence.run(transfer::intake);
+        sequence.run(transfer::forward);
         sequence.run(() -> flywheel.setSpeed(0));
         sequence.wait(250);
         sequence.run(() -> follower.followPath(pathBetween(shootPose, beforeRow3)));

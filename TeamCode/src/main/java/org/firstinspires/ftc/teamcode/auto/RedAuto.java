@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.auto;
 
 import com.pedropathing.geometry.BezierCurve;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.pedropathing.follower.Follower;
@@ -10,8 +11,12 @@ import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.components.Camera;
+import org.firstinspires.ftc.teamcode.components.Chassis;
 import org.firstinspires.ftc.teamcode.components.Flywheel;
+import org.firstinspires.ftc.teamcode.components.Lift;
 import org.firstinspires.ftc.teamcode.components.util.Sequence;
 import org.firstinspires.ftc.teamcode.components.Transfer;
 
@@ -25,11 +30,11 @@ public class RedAuto extends OpMode {
 
     private void addShootToSequence() {
         sequence.run(() -> flywheel.setSpeed(1110));
-        sequence.run(transfer::intake);
+        sequence.run(transfer::forward);
         sequence.wait(500);
         sequence.run(transfer::stop);
         sequence.wait(500);
-        sequence.run(transfer::shoot);
+        sequence.run(transfer::forward);
         sequence.run(() -> flywheel.setSpeed(1050));
         sequence.wait(1800);
     }
@@ -46,13 +51,22 @@ public class RedAuto extends OpMode {
         opModeTimer = new Timer();
         follower = Constants.createFollower(hardwareMap);
 
+        // ctrl hub
         DcMotorEx intakeMotor = hardwareMap.get(DcMotorEx.class, "intake");
-        DcMotorEx kickerMotor = hardwareMap.get(DcMotorEx.class, "kicker");
-        DcMotorEx flywheelMotor = hardwareMap.get(DcMotorEx.class, "flywheel");
+        Servo led = hardwareMap.get(Servo.class, "led");
 
-        transfer = new Transfer(null, intakeMotor, null, telemetry);
-        flywheel = new Flywheel(null, flywheelMotor, flywheelMotor, null, null, telemetry);
-        flywheelMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        // expn hub
+        DcMotorEx flywheelTop = hardwareMap.get(DcMotorEx.class, "flywheel-top");
+        DcMotorEx flywheelBottom = hardwareMap.get(DcMotorEx.class, "flywheel-bottom");
+        Servo gateServo = hardwareMap.get(Servo.class, "gate");
+        Servo hoodServo = hardwareMap.get(Servo.class, "hood");
+
+        Limelight3A limelight = hardwareMap.get(Limelight3A.class, "limelight");
+
+        Camera camera = new Camera(limelight, telemetry);
+
+        transfer = new Transfer(null, intakeMotor, gateServo, telemetry);
+        flywheel = new Flywheel(null, flywheelTop, flywheelBottom, hoodServo, led, camera, telemetry);
 
         Pose startPose = new Pose(24,123, Math.toRadians(90));
         Pose shootPose = new Pose(56, 88, Math.toRadians(135));
@@ -75,7 +89,7 @@ public class RedAuto extends OpMode {
 
         addShootToSequence();
 
-        sequence.run(transfer::intake);
+        sequence.run(transfer::forward);
         sequence.run(() -> flywheel.setSpeed(0));
         sequence.wait(250);
         sequence.run(() -> follower.followPath(pathBetween(beforeRow1, afterRow1)));
@@ -88,7 +102,7 @@ public class RedAuto extends OpMode {
 
         addShootToSequence();
 
-        sequence.run(transfer::intake);
+        sequence.run(transfer::forward);
         sequence.run(() -> flywheel.setSpeed(0));
         sequence.wait(250);
         sequence.run(() -> follower.followPath(pathBetween(shootPose, beforeRow2)));
@@ -100,7 +114,7 @@ public class RedAuto extends OpMode {
 
         addShootToSequence();
 
-        sequence.run(transfer::intake);
+        sequence.run(transfer::forward);
         sequence.run(() -> flywheel.setSpeed(0));
         sequence.wait(250);
         sequence.run(() -> follower.followPath(pathBetween(shootPose, beforeRow3)));

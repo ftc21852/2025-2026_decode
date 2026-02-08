@@ -43,7 +43,7 @@ public class FlywheelTune extends LinearOpMode {
 
         flywheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-        Chassis chassis = new Chassis(gamepad1, frontLeft, backLeft, frontRight, backRight, telemetry);
+        Chassis chassis = new Chassis(gamepad1, frontLeft, backLeft, frontRight, backRight, null, telemetry);
         Transfer transfer = new Transfer(gamepad1, intakeMotor, null, telemetry);
 
         // Motor directions

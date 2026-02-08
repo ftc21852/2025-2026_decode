@@ -1,76 +1,121 @@
 package org.firstinspires.ftc.teamcode.auto;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.components.Camera;
 import org.firstinspires.ftc.teamcode.components.Flywheel;
 import org.firstinspires.ftc.teamcode.components.Transfer;
-import org.firstinspires.ftc.teamcode.components.util.Sequence;
 
-@Autonomous
+@Autonomous (name = "Auto Practice")
 public class AutoPractice extends OpMode {
     private Follower follower;
     private Timer opModeTimer;
-    private Sequence sequence;
     Transfer transfer;
     Flywheel flywheel;
-    Auto auto;
+    private Auto auto;
 
     public void start() {
         auto.begin();
+        opModeTimer.resetTimer();
     }
 
     @Override
     public void loop() {
         follower.update();
         auto.update();
+        telemetry.addData("flywheel nominal speed", flywheel.getNominalSpeed());
+        telemetry.addData("flywheel actual speed", flywheel.getActualSpeed());
+        telemetry.setMsTransmissionInterval(20);
+        telemetry.update();
     }
 
     @Override
     public void init() {
+        opModeTimer = new Timer();
         follower = Constants.createFollower(hardwareMap);
 
         DcMotorEx intakeMotor = hardwareMap.get(DcMotorEx.class, "intake");
+        Servo led = hardwareMap.get(Servo.class, "led");
+
         DcMotorEx flywheelTop = hardwareMap.get(DcMotorEx.class, "flywheel-top");
         DcMotorEx flywheelBottom = hardwareMap.get(DcMotorEx.class, "flywheel-bottom");
+        Servo gateServo = hardwareMap.get(Servo.class, "gate");
+        Servo hoodServo = hardwareMap.get(Servo.class, "hood");
 
-        transfer = new Transfer(null, intakeMotor, null, telemetry);
-        Flywheel flywheel = new Flywheel(gamepad1, flywheelTop, flywheelBottom, null, null, telemetry);
+        Limelight3A limelight = hardwareMap.get(Limelight3A.class, "limelight");
+
+        Camera camera = new Camera(limelight, telemetry);
+
+        transfer = new Transfer(null, intakeMotor, gateServo, telemetry);
+        flywheel = new Flywheel(null, flywheelTop, flywheelBottom, hoodServo, led, camera, telemetry);
 
         auto = new Auto(follower);
 
-        auto.startAt(24, 123).facing(9_00); // must have this line
+        auto
+                .startAt(5.1, 5.0) .facing(3)
 
-        auto.goTo(60, 72); // inches
-        auto.goTo(2.5, 3.0); // mats
+                .run(flywheel, 1070)
+                .run(() -> flywheel.setHoodAngle(30))
+                .wait(2.0)
 
-        auto.turnTo(6); // 6 o'clock aka south
-        auto.turnTo(6_00); // more precise clock direction
-        auto.turnTo(Math.toRadians(-90)); // -90° counterclockwise of east aka south
+                .goTo(4.6, 4.5) .facing(1_30)
+                .run(transfer::openGate)
+                .run(transfer::forward)
+                .wait(2.0)
+                .stop(transfer)
+                .run(transfer::closeGate)
 
-        // move while facing a point
-        auto.goTo(48, 48).facing(0, 144);
-        auto.goTo(2.0, 2.0).facing(0.0, 6.0);
+                .goTo(4.0, 3.5) .facing(3)
+                .run(transfer::forward)
+                .goTo(5.1, 3.5) .facing(3)
+                .wait(0.5)
+                .stop(transfer)
 
-        // move while facing a direction (you can mix and match units lol)
-        auto.goTo(48, 48).facing(6_00);
-        auto.goTo(48, 48).facing(Math.toRadians(-90));
-        auto.goTo(2.0, 2.0).facing(6_00);
-        auto.goTo(2.0, 2.0).facing(Math.toRadians(-90));
+                .goTo(4.6, 4.5) .facing(1_30)
+                .run(transfer::openGate)
+                .wait(0.5)
+                .run(transfer::forward)
+                .wait(2.0)
+                .stop(transfer)
+                .run(transfer::closeGate)
 
-        auto.run(transfer::intake);
-        auto.run(transfer::shoot);
-        auto.run(transfer::reverse);
+                .goTo(4.0, 2.5) .facing(3)
+                .run(transfer::forward)
+                .goTo(5.3, 2.5) .facing(3)
+                .goTo(4.8, 2.5) .facing(3)
+                .stop(transfer)
 
-        auto.run(flywheel, 1500);
-        auto.waitUntil(() -> flywheel.speedIsOffByLessThan(5));
-        auto.wait(100);
+                .goTo(4.6, 4.5) .facing(1_30)
+                .run(transfer::openGate)
+                .wait(0.5)
+                .run(transfer::forward)
+                .wait(2.0)
+                .stop(transfer)
+                .run(transfer::closeGate)
 
-        auto.stop(transfer);
-        auto.stop(flywheel);
+                .goTo(4.0, 1.5) .facing(3)
+                .run(transfer::forward)
+                .goTo(5.3, 1.5) .facing(3)
+                .goTo(4.8, 1.5) .facing(3)
+                .stop(transfer)
+
+                .goTo(4.6, 4.6) .facing(1_30)
+                .run(transfer::openGate)
+                .wait(0.5)
+                .run(transfer::forward)
+                .wait(2.0)
+                .stop(transfer)
+                .run(transfer::closeGate)
+
+                .stop();
     }
 }
