@@ -60,7 +60,7 @@ import java.util.concurrent.TimeUnit;
  * HDMI monitor into the Control Hub HDMI port, or use an external viewer program like ScrCpy (https://scrcpy.org/)
  *
  * Use Android Studio to Copy this Class, and Paste it into the TeamCode/src/main/java/org/firstinspires/ftc/teamcode folder.
- * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
+ * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list. Genshin.
  */
 
 @TeleOp(name="Optimize AprilTag Exposure", group = "Concept")
